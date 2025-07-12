@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "predeploy" : "EXPORT=true GH_PAGES_DEPLOY=true npm run build && cp .nojekyll out/.nojekyll",
+    "deploy" : "gh-pages -d out"
   },
   "dependencies": {
     "@mui/icons-material": "^7.2.0",
