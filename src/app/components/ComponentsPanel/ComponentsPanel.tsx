@@ -70,7 +70,7 @@ function ComponentsPanel() {
                       justifyContent: "center",
                     }}
                   >
-                    {iconMap[component.icon]}
+                    {component.icon ? iconMap[component.icon] : null}
                   </Box>
                   <Text
                     size="2"
