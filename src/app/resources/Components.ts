@@ -6,7 +6,6 @@ export const components = [
     type: "button",
     children: "button",
     showInPanel: true,
-    
   },
   {
     name: "Input",
@@ -79,6 +78,13 @@ export const components = [
     id: "link",
     type: "link",
     children: "Link",
+    showInPanel: true,
+  },
+  {
+    name: "Container",
+    description: "A container component like a div, section, or article",
+    id: "container",
+    type: "container",
     showInPanel: false,
   },
 ];

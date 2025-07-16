@@ -1,5 +1,4 @@
 import { CanvasElement, OnInsertType, OnUpdateType } from "../../types/common";
-import Image from "next/image";
 import defaultImage from "../../assets/default-img.jpg";
 import { createPortal } from "react-dom";
 import Droppable, { DropMetaData } from "../Droppable/Droppable";
@@ -70,7 +69,7 @@ function RenderType({
     }
     case "image": {
       return (
-        <Image
+        <img
           src={element?.props?.src || defaultImage}
           width={element?.props?.width || 200}
           {...elementProps}
@@ -155,6 +154,13 @@ function RenderType({
         </a>
       );
     }
+    case "container": {
+      return (
+        <div id={id} {...elementProps}>
+          {childrenElements}
+        </div>
+      );
+    }
   }
 }
 
@@ -169,10 +175,11 @@ export function Document({
   ) => void;
 }) {
   const [mountTarget, setMountTarget] = useState<HTMLDivElement | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const { layoutTree, setSelectedElement } = useContext(CanvasContext);
+
+  let isDragging = false;
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -194,11 +201,11 @@ export function Document({
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    setIsDragging(true);
+    isDragging = true;
   };
 
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    setIsDragging(false);
+    isDragging = false;
   };
 
   const portalChiildren = (
@@ -209,7 +216,7 @@ export function Document({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={(e, dropMetaData) => {
-        setIsDragging(false);
+        isDragging = false;
         onDrop(e, dropMetaData);
       }}
     >
