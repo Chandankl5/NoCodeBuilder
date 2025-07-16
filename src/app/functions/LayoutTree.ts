@@ -1,5 +1,4 @@
 import { CanvasElement } from "../types/common";
-import { original } from 'immer'
 
 export function insertElement(
   element: CanvasElement,
@@ -36,7 +35,7 @@ export function insertElement(
       }
     } else if (Array.isArray(children) && children.length > 0) {
       children.forEach((child) => {
-        insertNode(child, root, targetElementId, placement);
+        insertNode(element, child, targetElementId, placement);
       });
     }
   }
@@ -74,7 +73,11 @@ export function updateElement(
   placement?: string
 ) {
   removeElement(element, root);
-  insertElement(element, root, targetElementId, placement);
+  try {
+    insertElement(element, root, targetElementId, placement);
+  } catch (error) {
+    console.error("Error updating element", error);
+  }
 }
 
 

@@ -22,45 +22,44 @@ function Canvas({ selectedLayout }: Props) {
   ) => {
     e.stopPropagation();
     const dragMetaData = dropMetaData.other;
-    let parsedData;
 
     try {
-      parsedData = JSON.parse(dragMetaData);
+      let parsedData = JSON.parse(dragMetaData);
+
+      if (parsedData && layoutTree.root) {
+        setLayoutTree((layoutTreeDraft) => {
+          const root = (layoutTreeDraft as LayoutTreeType).root;
+
+          const element = {
+            type: parsedData.type,
+            children: parsedData.children || [],
+          };
+
+          if (action === "insert") {
+            insertElement(
+              {
+                ...element,
+                id: crypto.randomUUID(),
+              },
+              root,
+              dropMetaData.targetId,
+              dropMetaData.dropPlacement
+            );
+          } else if (action === "update") {
+            updateElement(
+              {
+                ...element,
+                id: parsedData.id,
+              },
+              root,
+              dropMetaData.targetId,
+              dropMetaData.dropPlacement
+            );
+          }
+        });
+      }
     } catch (error) {
       console.error(error);
-    }
-
-    if (parsedData && layoutTree.root) {
-      setLayoutTree((layoutTreeDraft) => {
-        const root = (layoutTreeDraft as LayoutTreeType).root;
-
-        const element = {
-          type: parsedData.type,
-          children: parsedData.children || [],
-        };
-
-        if (action === "insert") {
-          insertElement(
-            {
-              ...element,
-              id: crypto.randomUUID(),
-            },
-            root,
-            dropMetaData.targetId,
-            dropMetaData.dropPlacement
-          );
-        } else if (action === "update") {
-          updateElement(
-            {
-              ...element,
-              id: parsedData.id,
-            },
-            root,
-            dropMetaData.targetId,
-            dropMetaData.dropPlacement
-          );
-        }
-      });
     }
 
     dropMetaData.targetElement?.classList.remove(
@@ -84,11 +83,12 @@ function Canvas({ selectedLayout }: Props) {
   };
 
   const handleDragOver = (
-    _: React.DragEvent<HTMLDivElement>,
+    e: React.DragEvent<HTMLDivElement>,
     dropMetaData: DropMetaData
   ) => {
-    const { targetElement, dropPlacement, other } = dropMetaData;
-    console.log("🚀 ~ Canvas ~ other:", other);
+    e.stopPropagation();
+  
+    const { targetElement, dropPlacement } = dropMetaData;
     if (dropPlacement === "before") {
       targetElement?.classList.remove("drag-over-after");
       targetElement?.classList.add("drag-over-before");
@@ -109,12 +109,12 @@ function Canvas({ selectedLayout }: Props) {
   };
 
   const handleDragStart = (
-    _: React.DragEvent<HTMLDivElement>,
+    e: React.DragEvent<HTMLDivElement>,
     meta: {
       targetElement: HTMLDivElement;
     }
   ) => {
-    console.log("meta", meta.targetElement.classList);
+    e.stopPropagation();
     meta.targetElement?.classList.remove("hovered");
   };
 
