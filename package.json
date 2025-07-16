@@ -15,6 +15,7 @@
   "dependencies": {
     "@ai-sdk/google": "^1.2.22",
     "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@google/genai": "^1.0.0",
     "@mastra/core": "^0.10.12",
     "@mastra/libsql": "^0.11.0",
