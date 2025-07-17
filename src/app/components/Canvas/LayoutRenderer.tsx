@@ -63,16 +63,13 @@ function LayoutRendererItem({
   onDragLeave,
   onDragStart,
 }: LayoutRendererItemProps) {
-  const { id, props, children = [] } = element;
-  const style = props?.style;
+  const { id, props: { style, children, attributes } = {} } = element ?? {};
   const styleProps = style?.reduce((acc, curr) => {
     return {
       ...acc,
       ...curr.properties,
     };
   }, {} as StyleProps);
-
-  const attributes = props?.attributes ?? ({} as Attributes);
 
   const elementProps = {
     id: id,

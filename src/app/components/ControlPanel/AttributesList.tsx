@@ -7,13 +7,15 @@ interface AttributesListProps {
   attributes: Record<string, any>;
   onAttributeChange?: (key: string, value: string) => void;
   onAttributeAdd?: (key: string, value: string) => void;
-  children?: CanvasElement;
+  onChildrenChange?: (key: string, value: string) => void;
+  children?: string;
 }
 
 function AttributesList({
   attributes,
   onAttributeChange,
   onAttributeAdd,
+  onChildrenChange,
   children,
 }: AttributesListProps) {
   const attributeEntries = Object.entries({
@@ -88,7 +90,11 @@ function AttributesList({
               <Flex gap="2" align="center">
                 <TextField.Root
                   value={value}
-                  onChange={(e) => onAttributeChange?.(key, e.target.value)}
+                  onChange={(e) =>
+                    key === "children"
+                      ? onChildrenChange?.(key, e.target.value)
+                      : onAttributeChange?.(key, e.target.value)
+                  }
                   size="2"
                   style={{
                     flex: 1,

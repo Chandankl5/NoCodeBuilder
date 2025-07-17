@@ -12,7 +12,7 @@ export function insertElement(
     targetElementId?: string,
     placement?: string
   ) {
-    const children = root?.children;
+    const children = root?.props?.children;
 
     if (!Array.isArray(children)) {
       return;
@@ -50,16 +50,18 @@ export function insertElement(
 function removeElement(element: CanvasElement, root: CanvasElement | null) {
   if (!root) return;
 
-  if (Array.isArray(root.children)) {
-    const elementToRemove = root.children.find(
+  if (Array.isArray(root.props?.children)) {
+    const elementToRemove = root.props?.children.find(
       (child) => child.id === element.id
     );
 
     if (elementToRemove) {
-      root.children = root.children.filter((child) => child.id !== element.id);
+      root.props.children = root.props.children.filter(
+        (child) => child.id !== element.id
+      );
       return;
     } else {
-      root.children.forEach((child) => {
+      root.props.children.forEach((child) => {
         removeElement(element, child);
       });
     }
@@ -80,16 +82,18 @@ export function updateElement(
   }
 }
 
-
-export function getElementById(id: string, root: CanvasElement | null): CanvasElement | null {
+export function getElementById(
+  id: string,
+  root: CanvasElement | null
+): CanvasElement | null {
   if (!root) return null;
 
   if (root.id === id) {
     return root;
   }
 
-  if (Array.isArray(root.children)) {
-    for (const child of root.children) {
+  if (Array.isArray(root.props?.children)) {
+    for (const child of root.props?.children) {
       const result = getElementById(id, child);
       if (result) return result;
     }
@@ -98,7 +102,11 @@ export function getElementById(id: string, root: CanvasElement | null): CanvasEl
   return null;
 }
 
-export function updateElementProps(element: CanvasElement, root: CanvasElement | null, props: Record<string, any>) {
+export function updateElementProps(
+  element: CanvasElement,
+  root: CanvasElement | null,
+  props: Record<string, any>
+) {
   const elementToUpdate = getElementById(element.id, root);
   if (elementToUpdate) {
     elementToUpdate.props = {
@@ -108,3 +116,20 @@ export function updateElementProps(element: CanvasElement, root: CanvasElement |
   }
 }
 
+export function setDefaultProps(element: CanvasElement) {
+  if (!element.props) {
+    element.props = {};
+  }
+
+  if (!element.props.style) {
+    element.props.style = [];
+  }
+
+  if (!element.props.attributes) {
+    element.props.attributes = {};
+  }
+
+  if (!element.props.children) {
+    element.props.children = [];
+  }
+}

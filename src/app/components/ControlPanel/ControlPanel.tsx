@@ -5,8 +5,12 @@ import { CanvasContext } from "../../context/CanvasContext";
 import SelectedElementBreadcrumb from "./SelectedElement";
 import { PropertyGroup } from "./StyleControls";
 import AttributesList from "./AttributesList";
-import { getElementById, updateElementProps } from "../../functions/LayoutTree";
-import { StyleGroupType } from "../../types/common";
+import {
+  getElementById,
+  setDefaultProps,
+  updateElementProps,
+} from "../../functions/LayoutTree";
+import { CanvasElement, StyleGroupType } from "../../types/common";
 
 function ControlPanel() {
   const { selectedElement, setLayoutTree, setSelectedElement } =
@@ -16,21 +20,21 @@ function ControlPanel() {
     return function (key: string, value: string) {
       if (!selectedElement) return;
 
-      setSelectedElement({
-        ...selectedElement,
-        props: {
-          ...selectedElement.props,
-          [prop]: {
-            ...selectedElement.props?.[prop],
-            [key]: value,
-          },
-        },
+      setSelectedElement((draft) => {
+        setDefaultProps(draft as CanvasElement);
+
+        if (draft?.props?.[prop]) {
+          draft.props[prop][key] = value;
+        }
       });
 
       setLayoutTree((draft) => {
-        updateElementProps(selectedElement, draft.root, {
+        const element = getElementById(selectedElement.id, draft.root);
+        setDefaultProps(element as CanvasElement);
+
+        updateElementProps(element as CanvasElement, draft.root, {
           [prop]: {
-            ...selectedElement.props?.[prop],
+            ...element?.props?.[prop],
             [key]: value,
           },
         });
@@ -53,6 +57,7 @@ function ControlPanel() {
         if (value) (style as any).properties[key] = value;
         else delete (style as any).properties[key];
       } else {
+        setDefaultProps(draft as CanvasElement);
         draft?.props?.style?.push({
           type: groupType as StyleGroupType,
           properties: {
@@ -71,6 +76,7 @@ function ControlPanel() {
         if (value) (style as any).properties[key] = value;
         else delete (style as any).properties[key];
       } else {
+        setDefaultProps(element as CanvasElement);
         element?.props?.style?.push({
           type: groupType as StyleGroupType,
           properties: {
@@ -78,6 +84,25 @@ function ControlPanel() {
           },
         });
       }
+    });
+  };
+
+  const handleChildrenChange = (key: string, value: string) => {
+    if (!selectedElement) return;
+
+    setSelectedElement((draft) => {
+      if (draft?.props?.children) {
+        draft.props.children = value;
+      }
+    });
+
+    setLayoutTree((draft) => {
+      const element = getElementById(selectedElement.id, draft.root);
+      setDefaultProps(element as CanvasElement);
+
+      updateElementProps(element as CanvasElement, draft.root, {
+        children: value,
+      });
     });
   };
 
@@ -126,7 +151,8 @@ function ControlPanel() {
                 attributes={selectedElement.props?.attributes || {}}
                 onAttributeChange={handlePropsChange("attributes")}
                 onAttributeAdd={handlePropsChange("attributes")}
-                children={selectedElement.children as any}
+                onChildrenChange={handleChildrenChange}
+                children={selectedElement.props?.children as any}
               />
             </Box>
           ) : (

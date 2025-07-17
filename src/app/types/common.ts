@@ -4,13 +4,13 @@ import { DropMetaData } from "../components/Droppable/Droppable";
 export interface CanvasElementProps extends Record<string, any> {
   attributes?: Record<string, any>;
   style?: StyleProps[];
+  children?: CanvasElement[] | string | number | boolean | null;
 }
 
 export interface CanvasElement {
   type: HTMLElement["tagName"];
   id: string;
   props?: CanvasElementProps;
-  children?: CanvasElement[] | string | number | boolean | null;
 }
 
 export type StyleGroupType =
