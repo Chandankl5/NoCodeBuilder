@@ -5,12 +5,22 @@ import { LibSQLStore } from "@mastra/libsql";
 import { componentsListTool } from "../tools/ComponentsTool";
 import { layoutTypeDefsTool } from "../tools/LayoutTool";
 
+import { UpstashStore } from "@mastra/upstash";
+
+const upstashStore = new UpstashStore({
+  url: process.env.UPSTASH_URL || "",
+  token: process.env.UPSTASH_TOKEN || "",
+});
+
+const libSqlStore = new LibSQLStore({
+  url: "file:../mastra.db",
+});
+
 export const NoCodeWebsiteBuilderAgent = new Agent({
   name: "NoCodeWebsiteBuilderAgent",
   instructions: ({ runtimeContext }) => {
     const id = runtimeContext.get("selectedElementId");
     const layoutTree = runtimeContext.get("layoutTree");
-    console.log("🚀 ~ layoutTree:", layoutTree)
 
     return `
 - You are an expert AI Layout Engineer embedded within a no-code website builder. Your primary responsibility is to interpret user natural language requests and translate them into precise, valid, and production-ready JSON representations of page layout trees. You act as the bridge between user intent and the visual rendering engine, ensuring seamless updates to the website's UI. Your work directly impacts the user's ability to design and modify web pages efficiently.
@@ -76,9 +86,7 @@ Current Layout Tree: ${JSON.stringify(layoutTree)}`;
     layoutTypeDefsTool,
   },
   memory: new Memory({
-    storage: new LibSQLStore({
-      url: "file:../mastra.db", // path is relative to the .mastra/output directory
-    }),
+    storage: process.env.NODE_ENV === "production" ? upstashStore : libSqlStore,
   }),
 });
 
