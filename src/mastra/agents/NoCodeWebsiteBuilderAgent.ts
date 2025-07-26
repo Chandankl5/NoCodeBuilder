@@ -4,17 +4,11 @@ import { Memory } from "@mastra/memory";
 import { LibSQLStore } from "@mastra/libsql";
 import { componentsListTool } from "../tools/ComponentsTool";
 import { layoutTypeDefsTool } from "../tools/LayoutTool";
-
-import { UpstashStore } from "@mastra/upstash";
 import { websiteBuilderPrompt } from "../prompts/WesbiteBuilderPrompt";
 
-const upstashStore = new UpstashStore({
-  url: process.env.UPSTASH_URL || "",
-  token: process.env.UPSTASH_TOKEN || "",
-});
-
 const libSqlStore = new LibSQLStore({
-  url: "file:../mastra.db",
+  url: process.env.LIBSQL_URL || "",
+  authToken: process.env.LIBSQL_AUTH_TOKEN || "",
 });
 
 export const NoCodeWebsiteBuilderAgent = new Agent({
@@ -33,7 +27,7 @@ ${websiteBuilderPrompt({ id, layoutTree })}
     layoutTypeDefsTool,
   },
   memory: new Memory({
-    storage: process.env.NODE_ENV === "production" ? upstashStore : libSqlStore,
+    storage: libSqlStore,
   }),
 });
 
