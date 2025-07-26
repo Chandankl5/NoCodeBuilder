@@ -2,15 +2,18 @@
 
 import Head from "next/head";
 import ControlPanel from "./components/ControlPanel/ControlPanel";
-import ComponentsPanel from "./components/ComponentsPanel/ComponentsPanel";
+import SidePanel from "./components/SidePanel/SidePanel";
 import CanvasContainer from "./components/CanvasContainer/CanvasContainer";
 import Nav from "./components/Nav/Nav";
 import { Box, Flex } from "@radix-ui/themes";
 import { CanvasProvider } from "./context/CanvasContext";
+import { ToastContainer } from "react-toastify";
+import { ErrorBoundary } from "react-error-boundary";
+import Error from "next/error";
 
 export default function Home() {
   return (
-    <>
+    <ErrorBoundary fallback={<Error statusCode={500} />}>
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -34,7 +37,7 @@ export default function Home() {
           <CanvasProvider>
             <Flex direction="row" overflow="hidden" height="100%">
               <Box width="20%" height="100%" overflow="auto">
-                <ComponentsPanel />
+                <SidePanel />
               </Box>
 
               <Flex
@@ -56,6 +59,7 @@ export default function Home() {
           </CanvasProvider>
         </Flex>
       </Box>
-    </>
+      <ToastContainer />
+    </ErrorBoundary>
   );
 }

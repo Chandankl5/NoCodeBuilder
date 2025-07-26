@@ -6,13 +6,15 @@ import LayoutRenderer from "./LayoutRenderer";
 import { DropMetaData } from "../Droppable/Droppable";
 import { insertElement, updateElement } from "../../functions/LayoutTree";
 import { CanvasContext } from "../../context/CanvasContext";
+import OverlayLoader from "../OverlayLoader/OverlayLoader";
 
 interface Props {
   selectedLayout: ILayout;
 }
 
 function Canvas({ selectedLayout }: Props) {
-  const { layoutTree, setLayoutTree } = useContext(CanvasContext);
+  const { layoutTree, setLayoutTree, isLayoutLoading } =
+    useContext(CanvasContext);
   const selectedLayoutWidth = selectedLayout.viewport.width;
 
   const handleDrop = (
@@ -87,7 +89,7 @@ function Canvas({ selectedLayout }: Props) {
     dropMetaData: DropMetaData
   ) => {
     e.stopPropagation();
-  
+
     const { targetElement, dropPlacement } = dropMetaData;
     if (dropPlacement === "before") {
       targetElement?.classList.remove("drag-over-after");
@@ -120,6 +122,7 @@ function Canvas({ selectedLayout }: Props) {
 
   return (
     <Box
+      position="relative"
       style={{
         width: selectedLayoutWidth ? `${selectedLayoutWidth}px` : "100%",
         background: "white",
@@ -135,6 +138,7 @@ function Canvas({ selectedLayout }: Props) {
         onDragLeave={handleDragLeave}
         onDragStart={handleDragStart}
       />
+      <OverlayLoader isVisible={isLayoutLoading} />
     </Box>
   );
 }
